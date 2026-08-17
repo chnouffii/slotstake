@@ -4,33 +4,36 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Réserve 1862 — Club privé & Carrés VIP · Strasbourg</title>
-<meta name="description" content="Réserve 1862 — soirées privées, carrés VIP et service bouteilles au cœur de Strasbourg. Réservez votre table sur le plan interactif du club." />
-<meta name="theme-color" content="#0B0B0C" />
+<meta name="description" content="Réserve 1862, club privé à Strasbourg. Salle en 3D, carrés VIP, service magnum : choisissez votre table sur le plan interactif." />
+<meta name="theme-color" content="#08080A" />
 <meta property="og:title" content="Réserve 1862 — Club privé & Carrés VIP · Strasbourg" />
-<meta property="og:description" content="Plan interactif, carrés VIP, packs bouteilles. Réservation immédiate." />
+<meta property="og:description" content="La salle en volume, la table en deux clics." />
 <meta property="og:type" content="website" />
-<link rel="preload" href="assets/fonts/syne-700-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/playfairdisplay-400i-latin.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="assets/fonts/inter-300-latin.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="assets/css/fonts.css" />
 <link rel="stylesheet" href="assets/css/styles.css" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230B0B0C'/%3E%3Ctext x='16' y='22' font-family='serif' font-size='16' fill='%23D4AF37' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2308080A'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-style='italic' font-size='19' fill='%23E8B44A' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E" />
 </head>
 <body>
 
 <a class="skip-link" href="#reservations">Aller à la réservation</a>
 
+<!-- curseur contextuel -->
+<div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+<div class="cursor-badge" id="cursor-badge" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
 <!-- ============ HEADER ============ -->
 <header class="header" id="header">
-  <div class="header__inner">
-    <a class="brand" href="#top" aria-label="Réserve 1862 — accueil">
+  <div class="header__in">
+    <a class="brand" href="#top" aria-label="Réserve 1862, accueil">
       <span class="brand__mark" aria-hidden="true">
-        <svg viewBox="0 0 40 24" width="34" height="21" fill="none">
+        <svg viewBox="0 0 40 24" width="32" height="19" fill="none">
           <path d="M2 8c5-1 8 1 9 5 1-4 4-6 9-6s8 2 9 6c1-4 4-6 9-5-3 2-5 5-6 9-3-3-6-4-9-2-1-3-2-4-3-4s-2 1-3 4c-3-2-6-1-9 2-1-4-3-7-6-9Z" fill="currentColor"/>
         </svg>
       </span>
-      <span class="brand__text">
-        <strong>RÉSERVE</strong><em>1862</em>
-      </span>
+      <span class="brand__txt"><b>RÉSERVE</b><i>1862</i></span>
     </a>
 
     <nav class="nav" id="nav" aria-label="Navigation principale">
@@ -40,11 +43,9 @@
       <a href="#infos">Infos &amp; Accès</a>
     </nav>
 
-    <div class="header__actions">
-      <a class="btn btn--gold btn--sm" href="#reservations" data-scroll>Réserver une table</a>
-      <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav">
-        <span></span><span></span>
-      </button>
+    <div class="header__act">
+      <a class="btn btn--gold btn--sm" href="#reservations"><span>Réserver une table</span></a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav"><span></span><span></span></button>
     </div>
   </div>
 </header>
@@ -53,262 +54,146 @@
 
 <!-- ============ HERO ============ -->
 <section class="hero" aria-labelledby="hero-title">
-  <div class="hero__stage" aria-hidden="true">
-    <div class="scene scene--1 is-active"></div>
-    <div class="scene scene--2"></div>
-    <div class="scene scene--3"></div>
-    <div class="bokeh"></div>
-    <div class="beams"></div>
-    <div class="vignette"></div>
-    <div class="grain"></div>
+  <div class="hero__bg" aria-hidden="true">
+    <video id="teaser" class="teaser" src="assets/media/ambience.webm" autoplay muted loop playsinline preload="auto"></video>
+    <div class="hero__fallback"></div>
+    <div class="hero__rays"></div>
+    <div class="hero__mask"></div>
   </div>
 
-  <div class="hero__content">
-    <p class="eyebrow"><span class="dot" aria-hidden="true"></span> Club privé · Strasbourg · depuis 1862</p>
-    <h1 id="hero-title" class="hero__title">
-      La nuit,<br /><span class="accent">sur réservation.</span>
-    </h1>
-    <p class="hero__lede">
-      Quatre carrés VIP, une ligne de banquettes face au DJ, un service bouteilles au geste juste.
-      Cent quatre-vingts places, pas une de plus.
-    </p>
+  <div class="hero__in">
+    <p class="kicker kicker--dot">Club privé · Strasbourg · depuis 1862</p>
 
-    <div class="hero__cta">
-      <a class="btn btn--gold" href="#reservations" data-scroll>Voir le plan &amp; réserver</a>
-      <a class="btn btn--ghost" href="#programmation" data-scroll>La programmation</a>
-    </div>
+    <h1 id="hero-title" class="hero__title" data-split>Une salle,<br>quinze tables,<br><em>une seule nuit.</em></h1>
 
-    <div class="hero__next glass" id="next-event">
-      <div class="next__left">
-        <span class="micro">Prochaine soirée</span>
-        <strong class="next__title" id="next-title">—</strong>
-        <span class="next__meta" id="next-meta">—</span>
-      </div>
-      <div class="next__count" id="countdown" aria-live="polite">
-        <div><b data-unit="d">—</b><span>jours</span></div>
-        <div><b data-unit="h">—</b><span>heures</span></div>
-        <div><b data-unit="m">—</b><span>min</span></div>
-        <div><b data-unit="s">—</b><span>sec</span></div>
+    <div class="hero__foot">
+      <p class="hero__lede reveal">
+        Quatre carrés VIP face à la cabine, une ligne de banquettes le long du mur,
+        un service au magnum. La salle est en volume : choisissez votre place comme si vous y étiez.
+      </p>
+
+      <div class="hero__next reveal">
+        <span class="kicker">Prochaine soirée</span>
+        <p class="hero__ev" id="next-title">—</p>
+        <p class="hero__evline" id="next-line">—</p>
+        <div class="count" aria-live="polite">
+          <span><b data-unit="d">—</b><i>j</i></span>
+          <span><b data-unit="h">—</b><i>h</i></span>
+          <span><b data-unit="m">—</b><i>m</i></span>
+          <span><b data-unit="s">—</b><i>s</i></span>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="hero__slider" role="tablist" aria-label="Ambiances">
-    <button role="tab" class="is-active" aria-selected="true" aria-label="Ambiance 1"></button>
-    <button role="tab" aria-selected="false" aria-label="Ambiance 2"></button>
-    <button role="tab" aria-selected="false" aria-label="Ambiance 3"></button>
-  </div>
+  <a class="hero__scroll" href="#reservations" aria-label="Descendre vers la salle"><span></span></a>
 </section>
 
 <!-- ============ BANDEAU ============ -->
-<div class="ticker" aria-hidden="true">
-  <div class="ticker__track">
-    <span>Carré DJ VIP</span><i>✦</i><span>Service magnum</span><i>✦</i><span>Dress code chic</span><i>✦</i>
-    <span>Ouverture 23h30</span><i>✦</i><span>Strasbourg</span><i>✦</i><span>Réservation obligatoire</span><i>✦</i>
-    <span>Carré DJ VIP</span><i>✦</i><span>Service magnum</span><i>✦</i><span>Dress code chic</span><i>✦</i>
-    <span>Ouverture 23h30</span><i>✦</i><span>Strasbourg</span><i>✦</i><span>Réservation obligatoire</span><i>✦</i>
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__t">
+    <span>Carré DJ VIP</span><i>·</i><span class="it">Service magnum</span><i>·</i><span>Dress code chic</span><i>·</i>
+    <span class="it">Ouverture 23h30</span><i>·</i><span>Strasbourg</span><i>·</i><span class="it">Réservation obligatoire</span><i>·</i>
+    <span>Carré DJ VIP</span><i>·</i><span class="it">Service magnum</span><i>·</i><span>Dress code chic</span><i>·</i>
+    <span class="it">Ouverture 23h30</span><i>·</i><span>Strasbourg</span><i>·</i><span class="it">Réservation obligatoire</span><i>·</i>
   </div>
 </div>
 
-<!-- ============ PLAN INTERACTIF ============ -->
-<section class="section section--plan" id="reservations" aria-labelledby="plan-title">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="index">01</span>
-      <h2 id="plan-title" class="h2">Carré VIP<br /><span class="accent">&amp; Réservations</span></h2>
-      <p class="section__lede">
-        Le plan réel de l'établissement. Sélectionnez une table libre pour ouvrir la fiche :
-        capacité, minimum de consommation, pack bouteilles recommandé et demande instantanée.
-      </p>
-    </div>
-
-    <div class="plan-toolbar reveal">
-      <div class="dates" id="date-tabs" role="tablist" aria-label="Choisir une soirée"></div>
-      <div class="plan-toolbar__right">
-        <p class="avail" id="avail-count" aria-live="polite">—</p>
-        <div class="viewtoggle" role="group" aria-label="Mode d'affichage">
-          <button type="button" class="is-active" data-view="plan">Plan</button>
-          <button type="button" data-view="list">Liste</button>
-        </div>
-      </div>
-    </div>
-
+<!-- ============ LA SALLE ============ -->
+<section class="room" id="reservations" aria-labelledby="room-title">
+  <div class="room__head wrap">
+    <span class="kicker reveal">01 — Carré VIP &amp; Réservations</span>
+    <h2 id="room-title" class="room__title reveal" data-split>La salle,<br><em>en volume.</em></h2>
+    <p class="room__lede reveal">
+      Survolez un volume pour l’isoler, cliquez pour ouvrir sa fiche. Les tables complètes
+      portent une croix ; les autres n’attendent qu’un nom et un numéro.
+    </p>
     <p class="event-note" id="event-note" hidden></p>
+  </div>
 
-    <div class="plan-grid">
-      <!-- ---- PLAN SVG ---- -->
-      <figure class="planbox glass reveal" id="planbox">
-        <figcaption class="planbox__cap">
-          <span class="micro">Rez-de-chaussée · Réserve 1862</span>
-          <span class="micro micro--dim">Plan à titre indicatif</span>
-        </figcaption>
-
-        <div class="planbox__scroll">
-          <svg id="floorplan" viewBox="40 66 920 856" role="group" aria-label="Plan interactif des tables du club" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(214,175,55,.28)" stroke-width="1"/>
-              </pattern>
-              <radialGradient id="floorGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="rgba(212,175,55,.055)"/>
-                <stop offset="65%" stop-color="rgba(212,175,55,.018)"/>
-                <stop offset="100%" stop-color="rgba(212,175,55,0)"/>
-              </radialGradient>
-            </defs>
-
-            <!-- structure -->
-            <g class="fp-structure">
-              <!-- enveloppe des murs -->
-              <path class="wall" d="M80 180 H760 V520 H900 V860 H80 Z" />
-              <!-- refend / retour de mur bas gauche -->
-              <path class="wall wall--thin" d="M320 860 V690 H330" />
-              <path class="wall wall--thin" d="M80 640 H300 V660" />
-              <!-- retours de mur des alcôves VIP droite -->
-              <path class="wall wall--thin" d="M760 205 H770 M760 330 H770 M760 360 H770 M760 485 H770" />
-
-              <!-- dancefloor -->
-              <circle class="floor-glow" cx="470" cy="360" r="175" fill="url(#floorGlow)"/>
-              <circle class="dance" cx="470" cy="360" r="140" />
-              <circle class="dance dance--in" cx="470" cy="360" r="96" />
-              <text class="fp-label fp-label--dim" x="470" y="365">DANCEFLOOR</text>
-
-              <!-- cabine DJ -->
-              <g class="static-zone">
-                <rect class="booth" x="180" y="112" width="205" height="68" rx="3"/>
-                <text class="fp-label" x="282" y="152">CABINE DJ</text>
-              </g>
-
-              <!-- rail / mange-debout le long des banquettes -->
-              <rect class="rail" x="196" y="212" width="16" height="420" rx="8"/>
-
-              <!-- bar -->
-              <g class="static-zone">
-                <path class="bar" d="M340 700 H660 V775 H340 Z"/>
-                <rect class="bar-fill" x="340" y="700" width="320" height="75" fill="url(#hatch)"/>
-                <text class="fp-label" x="500" y="745">BAR</text>
-              </g>
-
-              <!-- escalier / accès -->
-              <g class="static-zone">
-                <rect class="stairs" x="770" y="560" width="120" height="290" rx="2"/>
-                <g class="steps">
-                  <line x1="770" y1="590" x2="890" y2="590"/><line x1="770" y1="620" x2="890" y2="620"/>
-                  <line x1="770" y1="650" x2="890" y2="650"/><line x1="770" y1="680" x2="890" y2="680"/>
-                  <line x1="770" y1="710" x2="890" y2="710"/><line x1="770" y1="740" x2="890" y2="740"/>
-                  <path d="M770 770 L890 800 M770 800 L890 826 M790 826 L880 850"/>
-                </g>
-                <text class="fp-label" x="830" y="545">ESCALIER</text>
-                <path class="arrow" d="M830 880 V845 M822 855 L830 845 L838 855"/>
-                <text class="fp-label fp-label--dim" x="830" y="896">ACCÈS</text>
-              </g>
-
-              <!-- légendes de zones -->
-              <text class="fp-zonetag" x="118" y="200" text-anchor="start">LIGNE VIP · BANQUETTES</text>
-              <text class="fp-zonetag" x="118" y="678" text-anchor="start">LOUNGE</text>
-              <text class="fp-zonetag" x="882" y="200" text-anchor="end">MUR VIP</text>
-            </g>
-
-            <!-- tables injectées par JS -->
-            <g id="fp-tables"></g>
-          </svg>
-        </div>
-
-        <p class="plan-hint">Astuce : sur mobile, la vue <b>Liste</b> facilite la réservation.</p>
-
-        <ul class="legend">
-          <li><span class="sw sw--free"></span>Libre</li>
-          <li><span class="sw sw--sel"></span>Sélectionnée</li>
-          <li><span class="sw sw--pending"></span>Demande envoyée</li>
-          <li><span class="sw sw--taken"></span>Complet</li>
-          <li><span class="sw sw--static"></span>Non réservable</li>
-        </ul>
-      </figure>
-
-      <!-- ---- LISTE (mobile / accessibilité) ---- -->
-      <div class="tablelist" id="tablelist" hidden></div>
-
-      <!-- ---- COLONNE INFOS ---- -->
-      <aside class="plan-side reveal">
-        <div class="side-card glass">
-          <span class="micro">Comment ça marche</span>
-          <ol class="steps-list">
-            <li><b>01</b> Choisissez votre soirée et une table libre sur le plan.</li>
-            <li><b>02</b> Renseignez le nom, le téléphone et le nombre de convives.</li>
-            <li><b>03</b> Sélectionnez le pack bouteilles — modifiable sur place.</li>
-            <li><b>04</b> Confirmation par téléphone sous 2 h, table tenue jusqu'à 1h00.</li>
-          </ol>
-        </div>
-        <div class="side-card glass">
-          <span class="micro">À savoir</span>
-          <p class="side-p">Le minimum de consommation est indiqué par table et s'entend hors service voiturier. Les carrés DJ VIP 1 &amp; 2 sont les plus demandés : ils partent en général 10 jours avant la date.</p>
-          <p class="side-p side-p--gold">Soirées <b>+17</b> : service sans alcool pour les mineurs, contrôle d'identité systématique à l'entrée.</p>
-        </div>
-      </aside>
+  <div class="stage" id="stage">
+    <div class="stage__glow" aria-hidden="true"></div>
+    <div class="stage__scene" id="iso-scene">
+      <svg id="iso" viewBox="-655 -165 1310 895" role="group" aria-label="Salle du club en vue isométrique : sélectionnez une table" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gTop" x1="0" y1="0" x2="0.4" y2="1">
+            <stop offset="0%" stop-color="rgba(255,226,170,.14)"/>
+            <stop offset="100%" stop-color="rgba(255,205,120,.03)"/>
+          </linearGradient>
+          <linearGradient id="gFloor" x1="0.2" y1="0" x2="0.8" y2="1">
+            <stop offset="0%" stop-color="#121116"/>
+            <stop offset="55%" stop-color="#0c0c0f"/>
+            <stop offset="100%" stop-color="#08080a"/>
+          </linearGradient>
+          <linearGradient id="gWall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(232,180,74,.10)"/>
+            <stop offset="70%" stop-color="rgba(20,18,16,.15)"/>
+            <stop offset="100%" stop-color="rgba(8,8,10,.05)"/>
+          </linearGradient>
+          <filter id="soft" x="-70%" y="-70%" width="240%" height="240%">
+            <feGaussianBlur stdDeviation="16" />
+          </filter>
+          <filter id="softer" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="34" />
+          </filter>
+        </defs>
+        <g id="iso-structure"></g>
+        <g id="iso-objects"></g>
+        <g id="iso-front"></g>
+      </svg>
     </div>
+    <p class="stage__hint" aria-hidden="true">Glissez pour explorer · cliquez une table</p>
   </div>
 </section>
 
 <!-- ============ PROGRAMMATION ============ -->
-<section class="section section--prog" id="programmation" aria-labelledby="prog-title">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="index">02</span>
-      <h2 id="prog-title" class="h2">Program<span class="accent">mation</span></h2>
-      <p class="section__lede">Mardis Movida, weekends réservés. Guestlist ouverte jusqu'à 20h le jour même.</p>
+<section class="sec" id="programmation" aria-labelledby="prog-title">
+  <div class="sec__head wrap">
+    <div>
+      <span class="kicker reveal">02 — Programmation</span>
+      <h2 id="prog-title" class="sec__title reveal" data-split>Les nuits<br><em>à venir.</em></h2>
     </div>
-
-    <div class="prog" id="prog-list"></div>
-  </div>
-</section>
-
-<!-- ============ CARTE & BOUTEILLES ============ -->
-<section class="section section--carte" id="carte" aria-labelledby="carte-title">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="index">03</span>
-      <h2 id="carte-title" class="h2">Carte<br /><span class="accent">&amp; Bouteilles</span></h2>
-      <p class="section__lede">Sélection courte, service au magnum, cierges magiques à la demande.</p>
-    </div>
-
-    <div class="cards" id="packs-list"></div>
-
-    <div class="carte-note glass reveal">
-      <p><span class="micro">Service</span> Chaque bouteille est accompagnée de softs, glace et verrerie pour la table. Carte complète des spiritueux et cocktails disponible sur place.</p>
-      <p><span class="micro">Paiement</span> Empreinte bancaire à la réservation pour les carrés VIP. Annulation sans frais jusqu'à 48 h avant la soirée.</p>
+    <div class="sec__side reveal">
+      <p>Mardis Movida, weekends réservés. Guestlist ouverte jusqu’à 20h le jour même.</p>
+      <div class="arrows" data-rail>
+        <button type="button" data-dir="prev" aria-label="Soirées précédentes">←</button>
+        <button type="button" data-dir="next" aria-label="Soirées suivantes">→</button>
+      </div>
     </div>
   </div>
+  <div class="rail rail--ev" id="agenda"></div>
 </section>
 
-<!-- ============ INFOS & ACCÈS ============ -->
-<section class="section section--infos" id="infos" aria-labelledby="infos-title">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="index">04</span>
-      <h2 id="infos-title" class="h2">Infos<br /><span class="accent">&amp; Accès</span></h2>
+<!-- ============ CARTE ============ -->
+<section class="sec sec--carte" id="carte" aria-labelledby="carte-title">
+  <div class="sec__head wrap">
+    <div>
+      <span class="kicker reveal">03 — Carte &amp; Bouteilles</span>
+      <h2 id="carte-title" class="sec__title reveal" data-split>Le service<br><em>au magnum.</em></h2>
     </div>
+    <div class="sec__side reveal">
+      <p>Sélection courte, sortie de bouteille au cierge, cocktails signature. Carte complète en salle.</p>
+      <div class="arrows" data-rail>
+        <button type="button" data-dir="prev" aria-label="Bouteilles précédentes">←</button>
+        <button type="button" data-dir="next" aria-label="Bouteilles suivantes">→</button>
+      </div>
+    </div>
+  </div>
+  <div class="rail rail--bt" id="bottles"></div>
+</section>
 
-    <div class="infos-grid">
-      <div class="info reveal">
-        <span class="micro">Horaires</span>
-        <p>Mardi · 23h30 — 05h00<br />Vendredi &amp; Samedi · 23h30 — 06h00<br />Fermé du dimanche au lundi</p>
-      </div>
-      <div class="info reveal">
-        <span class="micro">Dress code</span>
-        <p>Chic, soigné, sans compromis.<br />Refusés : survêtement, short, casquette, claquettes.<br />L'entrée reste à l'appréciation du physionomiste.</p>
-      </div>
-      <div class="info reveal">
-        <span class="micro">Accès</span>
-        <p>Strasbourg centre — adresse exacte communiquée à la confirmation de réservation.<br />Parking Sainte-Aurélie à 4 min à pied · voiturier les vendredis et samedis.</p>
-      </div>
-      <div class="info reveal">
-        <span class="micro">Contact direct</span>
-        <p>
-          <a href="tel:+33600000000">+33 6 00 00 00 00</a><br />
-          <a href="mailto:reservations@reserve1862.fr">reservations@reserve1862.fr</a><br />
-          <a href="https://instagram.com/reserve1862" target="_blank" rel="noopener">@reserve1862</a>
-        </p>
-      </div>
-    </div>
+<!-- ============ INFOS ============ -->
+<section class="sec sec--infos" id="infos" aria-labelledby="infos-title">
+  <div class="wrap">
+    <span class="kicker reveal">04 — Infos &amp; Accès</span>
+    <h2 id="infos-title" class="sec__title reveal" data-split>Avant<br><em>de venir.</em></h2>
+
+    <dl class="infos">
+      <div class="reveal"><dt>Horaires</dt><dd>Mardi 23h30 — 05h00<br />Vendredi &amp; samedi 23h30 — 06h00<br />Fermé du dimanche au lundi</dd></div>
+      <div class="reveal"><dt>Dress code</dt><dd>Chic, soigné, sans compromis.<br />Refusés : survêtement, short, casquette, claquettes.<br />L’entrée reste à l’appréciation du physionomiste.</dd></div>
+      <div class="reveal"><dt>Accès</dt><dd>Strasbourg centre — adresse communiquée à la confirmation.<br />Parking Sainte-Aurélie à 4 min à pied.<br />Voiturier les vendredis et samedis.</dd></div>
+      <div class="reveal"><dt>Contact</dt><dd><a href="tel:+33600000000">+33 6 00 00 00 00</a><br /><a href="mailto:reservations@reserve1862.fr">reservations@reserve1862.fr</a><br /><a href="https://instagram.com/reserve1862" target="_blank" rel="noopener">@reserve1862</a></dd></div>
+    </dl>
   </div>
 </section>
 
@@ -317,60 +202,55 @@
 <!-- ============ FOOTER ============ -->
 <footer class="footer" id="footer">
   <div class="wrap">
-    <div class="footer__top">
-      <div class="footer__brand">
-        <span class="brand__mark brand__mark--lg" aria-hidden="true">
-          <svg viewBox="0 0 40 24" width="52" height="32" fill="none">
-            <path d="M2 8c5-1 8 1 9 5 1-4 4-6 9-6s8 2 9 6c1-4 4-6 9-5-3 2-5 5-6 9-3-3-6-4-9-2-1-3-2-4-3-4s-2 1-3 4c-3-2-6-1-9 2-1-4-3-7-6-9Z" fill="currentColor"/>
-          </svg>
-        </span>
-        <p class="footer__sign">RÉSERVE <em>1862</em></p>
-        <p class="footer__tag">Club privé — Strasbourg</p>
-      </div>
-      <div class="footer__cta">
-        <p class="footer__big">Une table<br /><span class="accent">vous attend.</span></p>
-        <a class="btn btn--gold" href="#reservations" data-scroll>Réserver une table</a>
-      </div>
+    <p class="footer__big display reveal">Une table<br />vous attend.</p>
+    <div class="footer__row">
+      <a class="btn btn--gold" href="#reservations"><span>Réserver une table</span></a>
+      <p class="footer__sign"><b>RÉSERVE</b> <i>1862</i><span>Club privé — Strasbourg</span></p>
     </div>
-
     <div class="footer__bottom">
-      <p>© <span id="year">2026</span> Réserve 1862 — Tous droits réservés.</p>
+      <p>© <span id="year">2026</span> Réserve 1862</p>
       <nav aria-label="Liens légaux">
-        <a href="#mentions" id="legal-link">Mentions légales</a>
-        <a href="#infos" data-scroll>Confidentialité</a>
-        <a href="#reservations" data-scroll>CGV réservations</a>
-        <button type="button" class="linkish" id="reset-demo">Réinitialiser la démo</button>
+        <a href="#mentions">Mentions légales</a>
+        <a href="#infos">Confidentialité</a>
+        <button type="button" id="reset">Réinitialiser la démo</button>
       </nav>
     </div>
-
     <details class="mentions" id="mentions">
       <summary>Mentions légales</summary>
-      <p>Réserve 1862 — établissement de nuit, Strasbourg. Site vitrine et module de réservation à usage de démonstration : les demandes envoyées depuis ce plan sont conservées uniquement dans votre navigateur et ne sont transmises à aucun serveur. Numéro de téléphone, e-mail, capacités et minimums de consommation affichés sont des valeurs d'exemple à remplacer par les informations officielles de l'établissement. Vente d'alcool interdite aux mineurs. L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</p>
+      <p>Réserve 1862 — établissement de nuit, Strasbourg. Site vitrine et module de réservation à usage de démonstration : les demandes envoyées depuis la salle interactive sont conservées uniquement dans votre navigateur et ne sont transmises à aucun serveur. Téléphone, e-mail, adresse, capacités, minimums de consommation et prix affichés sont des valeurs d’exemple, à remplacer par les informations officielles de l’établissement. Vente d’alcool interdite aux mineurs. L’abus d’alcool est dangereux pour la santé, à consommer avec modération.</p>
     </details>
   </div>
 </footer>
 
-<!-- ============ DRAWER RÉSERVATION ============ -->
-<div class="drawer-root" id="drawer-root" hidden>
-  <div class="drawer__backdrop" data-close></div>
-  <aside class="drawer glass" role="dialog" aria-modal="true" aria-labelledby="drawer-title" id="drawer">
-    <header class="drawer__head">
-      <div>
-        <span class="micro" id="drawer-kicker">Carré VIP</span>
-        <h3 id="drawer-title">—</h3>
-      </div>
-      <button class="iconbtn" type="button" data-close aria-label="Fermer">
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.5"/></svg>
-      </button>
-    </header>
+<!-- ============ DOCK FLOTTANT ============ -->
+<div class="dock" id="dock" aria-label="Sélection de la soirée et des tables">
+  <div class="dock__in">
+    <div class="dock__dates" id="dock-dates" role="tablist" aria-label="Choisir une soirée"></div>
+    <p class="dock__avail" id="avail" aria-live="polite">—</p>
+    <div class="dock__carousel">
+      <button type="button" class="dock__arrow" data-dir="prev" aria-label="Tables précédentes">←</button>
+      <div class="dock__rail" id="dock-rail"></div>
+      <button type="button" class="dock__arrow" data-dir="next" aria-label="Tables suivantes">→</button>
+    </div>
+  </div>
+</div>
 
-    <div class="drawer__body" id="drawer-body"></div>
-  </aside>
+<!-- ============ CARTE D'IMMERSION ============ -->
+<div class="immersive" id="immersive" hidden>
+  <div class="immersive__veil" data-close></div>
+  <article class="icard" role="dialog" aria-modal="true" aria-labelledby="icard-title">
+    <button class="icard__close" type="button" data-close aria-label="Fermer">
+      <svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.4"/></svg>
+    </button>
+    <div class="icard__visual" id="icard-visual"></div>
+    <div class="icard__body" id="icard-body"></div>
+  </article>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="assets/js/data.js"></script>
+<script src="assets/js/iso.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>
