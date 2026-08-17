@@ -1,111 +1,110 @@
-# Réserve 1862 — expérience web & réservation de tables
+# RÉSERVE 1862 — private club · Strasbourg
 
-Site statique (HTML / CSS / JS, sans build ni dépendance) pour le club **Réserve 1862**
-à Strasbourg. La pièce maîtresse est une **salle en volume, isométrique et interactive** :
-on survole un carré VIP, la salle s’assombrit autour, on clique, une carte d’immersion
-s’ouvre et la table se réserve en deux gestes.
+Site et module de réservation de tables du club **Réserve 1862**.
+Direction artistique brutaliste : obsidienne, infra-red, chrome liquide, grain
+argentique, typographie display ultra-large et monospace d’ingénierie.
 
-## Lancer le site
+Pièce maîtresse : un **blueprint nocturne** de la salle. Chaque table est un bloc
+de verre fumé aux arêtes nettes ; les tables libres respirent en rouge, les
+tables prises portent un `[ TAKEN ]`. Au survol, la salle s’assombrit et le bloc
+ciblé s’isole. Au clic, un **volet latéral asymétrique** glisse depuis la droite
+pour valider l’accès VIP.
 
-Aucune installation :
+## Stack
+
+React 19 · Vite 8 · Tailwind CSS 4 · Framer Motion · Lucide Icons.
+Polices auto-hébergées (Archivo Expanded + JetBrains Mono, SIL OFL) : aucune
+requête vers un tiers.
 
 ```bash
-npx http-server -p 8080     # puis http://localhost:8080
+npm install
+npm run dev       # développement — http://localhost:5173
+npm run build     # production → dist/
+npm run preview   # sert dist/ sur http://localhost:4173
 ```
 
-Un simple serveur statique suffit (Netlify, Vercel, GitHub Pages, nginx…). Le fichier
-vidéo doit être servi en HTTP pour être lu — en `file://` la page bascule
-automatiquement sur son fond CSS.
+`vite.config.js` utilise `base: './'` : le dossier `dist/` se déploie tel quel à
+la racine d’un domaine, dans un sous-dossier, ou sur un hébergeur statique
+(Netlify, Vercel, GitHub Pages, nginx). Le build est versionné dans `dist/` pour
+pouvoir publier sans repasser par la chaîne d’outils.
 
-## Structure
-
-```
-index.html                 sections, SVG vide de la salle, dock, carte d'immersion
-assets/css/fonts.css       @font-face — Playfair Display (italique) + Inter, auto-hébergées
-assets/css/styles.css      design system, salle, dock, carte, responsive
-assets/js/data.js          ⇽ données éditables : salle, tables, soirées, packs
-assets/js/iso.js           moteur de projection isométrique (monde → écran)
-assets/js/app.js           construction de la salle, survols, carte d'immersion, dock
-assets/media/ambience.webm boucle d'ambiance 10 s du hero (480 Ko, VP8)
-assets/fonts/              woff2 (sous-ensembles latin / latin-ext)
-```
-
-## La salle isométrique
-
-`iso.js` projette des coordonnées monde `(x, y au sol, z vertical)` :
+## Arborescence
 
 ```
-sx = (x − y) · 0.90        sy = (x + y) · 0.44 − z
+src/
+  data/venue.js              ⇽ source unique : salle, tables, soirées, packs
+  state/VenueContext.jsx     réservations, soirée active, survol, toast, flash
+  state/CursorContext.jsx    libellé et variante du curseur contextuel
+  hooks/                     useMagnetic · useCountdown · useFinePointer · useLockBody
+  components/
+    Hero.jsx                 titre display, marquee cinétique, compteur LED
+    LedCountdown.jsx         afficheur à segments éteints + ligne de balayage
+    CursorLayer.jsx          halo volumétrique + anneau + étiquette
+    Grain.jsx / Flash.jsx    grain animé · flash au clic
+    plan/Blueprint.jsx       plan SVG : murs, cotations, zones, piste
+    plan/TableBlock.jsx      un bloc de table + états + réticule
+    plan/PlanConsole.jsx     colonne technique : occupation, tables libres, légende
+    plan/EventBar.jsx        sélecteur de soirée (surlignage animé `layoutId`)
+    booking/BookingDrawer.jsx volet latéral, filigrane, specs, validation
+    booking/BottleConsole.jsx sélecteur de bouteilles façon console audio
+    ui/MagneticButton.jsx    bouton magnétique + balayage chromé
+    ui/Marquee.jsx           bandeau cinétique en boucle continue
 ```
 
-Chaque table est un **volume de verre** : dessus translucide à arête dorée, deux flancs
-sombres, halo au sol révélé au survol. `app.js` construit la scène puis trie les objets
-par profondeur (`x + y`) — algorithme du peintre — pour que les recouvrements soient
-justes. Un cercle au sol devient une ellipse à axes droits, ce qui donne le dancefloor
-et les nappes de lumière.
+## Le module de réservation
 
-Sont dessinés : cabine DJ, carrés VIP 1 & 2 face au DJ, carrés VIP 3 & 4 le long du mur
-droit, ligne de quatre banquettes VIP, trois tables hautes autour de la piste, bar,
-carré lounge de quatre tables, escalier et accès.
-
-**Interactions**
-
-- **Survol** : le volume s’illumine (halo doré diffus), le reste de la salle passe à 34 %
-  d’opacité, un **badge suit le curseur** — `VIP 02 — DISPONIBLE` — et un halo volumétrique
-  ambré accompagne la souris avec un léger retard. Le dock et la salle se répondent :
-  survoler une pastille éclaire la table correspondante, et inversement.
-- **Clic** : ouverture de la **carte d’immersion** — visuel d’ambiance propre à
-  l’emplacement (rendu isométrique du volume seul, en lévitation, sur le dégradé de la
-  zone), capacité, minimum, ce qui est inclus, choix du magnum / pack, sélecteur de
-  convives, nom, téléphone, puis confirmation avec sceau animé et retour haptique
-  (`navigator.vibrate`) sur mobile.
-- **États** : disponible (arête dorée), sélectionnée, demande envoyée (pointillé doré),
-  complet (croix rouge posée à plat sur le plateau, volume éteint) → la fiche propose
-  alors une liste d’attente.
-- **Dock flottant** : apparaît quand la salle entre dans le champ, disparaît sinon.
-  Soirées à gauche, compteur de disponibilités, carrousel horizontal des quinze tables.
-  Il remplace toute liste empilée : la sélection se fait sur la salle ou dans ce rail.
-- **Clavier** : chaque volume est focusable (Tab), activable (Entrée / Espace), la carte
-  piège le focus et se ferme à Échap.
+- **États des tables** — `DISPONIBLE` (arête chrome + respiration rouge),
+  `DEMANDE ENVOYÉE` (pointillé rouge), `COMPLET` (opacité réduite, `[ TAKEN ]`).
+- **Survol** — zoom doux du bloc, réticule aux quatre angles, reste de la salle à
+  14 % d’opacité, étiquette `VIP 02 — DISPONIBLE` accrochée au curseur.
+- **Volet latéral** — numéro de table en filigrane géant, badge
+  `[ DISPONIBILITÉ : VALIDÉE ]`, grille monospace (capacité, minimum, emplacement,
+  niveau acoustique), sélecteur de bouteilles à témoins LED et bargraph, compteur
+  de convives borné par la capacité, CTA pleine largeur à balayage chromé
+  « VALIDER L’ACCÈS VIP », puis écran de confirmation avec référence.
+  Table complète → bascule en liste d’attente.
+- **Console latérale** — soirée active, barre d’occupation, accès direct aux
+  tables libres (synchronisé avec le survol du plan), légende.
+- **Micro-interactions** — flash lumineux bref et vibration courte au clic
+  (`navigator.vibrate`), curseur magnétique sur les boutons, transitions de dates
+  en `cubic-bezier(0.16, 1, 0.3, 1)`.
+- **Accessibilité** — blocs focusables (Tab), activables (Entrée / Espace), piège
+  à focus et fermeture Échap dans le volet, libellés ARIA sur chaque table,
+  curseur natif conservé au tactile, `prefers-reduced-motion` respecté.
 
 ### Personnaliser
 
-Tout est dans `assets/js/data.js` :
+Tout part de `src/data/venue.js` :
 
 | Constante | Rôle |
 |---|---|
-| `ROOM`   | enveloppe des murs, bordures, dancefloor, mobilier fixe (DJ, bar), escalier |
-| `ZONES`  | tables : `code`, `name`, `capacity`, `min`, `packIds`, `includes`, `mood`, `amb` (dégradé d’ambiance) et `iso` = emprise au sol `{x, y, w, d}` + hauteur `h` |
-| `EVENTS` | soirées : date ISO (compte à rebours), line-up, et `reserved` = tables complètes |
-| `PACKS`  | carte bouteilles, réutilisée dans la section Carte et dans la fiche de réservation |
+| `ROOM`   | murs, raccords d’alcôves, piste, mobilier fixe (DJ, bar, escalier), cotations et repères de zones |
+| `ZONES`  | tables : `code`, `name`, `capacity`, `min`, `packIds`, `includes`, `acoustics` et `plan` = `{x, y, w, h}` dans le viewBox du blueprint |
+| `EVENTS` | soirées : date ISO (compte à rebours), line-up, `reserved` = tables complètes |
+| `PACKS`  | carte bouteilles, réutilisée par la section Carte et par le volet |
 
-Ajouter une table = ajouter un objet à `ZONES` : le volume, la pastille du dock et la
-fiche se génèrent seuls.
+Ajouter une table = ajouter un objet à `ZONES` : bloc, console et fiche se
+génèrent seuls.
 
 ## Démo vs production
 
 Le formulaire **n’envoie rien** : les demandes vivent dans le `localStorage`
-(`r1862.bookings.v2`), ce qui permet de dérouler tout le parcours. « Réinitialiser la
-démo » en pied de page efface ces données. Pour passer en production, remplacer le bloc
-d’enregistrement de `bindCard()` par un `fetch()` vers votre API, et servir les
-disponibilités depuis le back-office au lieu de `EVENTS[].reserved`.
+(`r1862.access.v3`), ce qui permet de dérouler tout le parcours. « Réinitialiser
+la démo », en pied de page, efface ces données. Pour passer en production,
+remplacer l’appel `book()` de `BookingDrawer` par un `fetch()` vers votre API et
+servir les disponibilités depuis le back-office plutôt que `EVENTS[].reserved`.
 
-### Contenus à remplacer avant mise en ligne
+### À remplacer avant mise en ligne
 
-Valeurs d’exemple : téléphone `+33 6 00 00 00 00`, e-mail `reservations@reserve1862.fr`,
-adresse (volontairement non précisée), horaires, minimums de consommation, prix des
-packs, line-ups et dates.
+Valeurs d’exemple : téléphone `+33 6 00 00 00 00`, e-mail
+`reservations@reserve1862.fr`, adresse (volontairement non précisée), horaires,
+minimums de consommation, niveaux acoustiques, prix des packs, line-ups et dates.
 
-## Notes techniques
+## Vérifications
 
-- **Ambiance du hero** : boucle de 10 s générée en canvas puis encodée en VP8 (480 Ko),
-  parfaitement bouclée, jouée en `autoplay muted loop playsinline`. Si la lecture est
-  refusée ou le fichier absent, le fond CSS (dégradés, faisceaux, grain) prend le relais.
-  Pour un vrai teaser tourné en club, remplacer `assets/media/ambience.webm`.
-- **Polices auto-hébergées** (Playfair Display italique pour les titres, Inter pour le
-  reste, SIL Open Font License 1.1) : aucune requête tierce, rendu identique hors ligne.
-- **Grain** : overlay SVG plein écran en `mix-blend-mode: overlay`, animé par pas.
-- **Accessibilité / confort** : `prefers-reduced-motion` désactive curseur personnalisé,
-  parallaxe et animations ; le curseur natif reste actif sur écran tactile et au clavier.
-- Testé sous Chromium (1440 px et 390 px) : 28 vérifications fonctionnelles au vert,
-  aucune erreur console, aucun débordement horizontal.
+31 contrôles fonctionnels au vert sous Chromium (1440 px et 390 px) : états et
+survols du plan, synchronisation console ↔ blueprint, ouverture du volet,
+sélecteur de bouteilles, bornes du compteur, validation et messages d’erreur,
+persistance après rechargement, navigation clavier et Échap, liste d’attente,
+changement de soirée, réinitialisation. Aucune erreur console, aucun débordement
+horizontal.
