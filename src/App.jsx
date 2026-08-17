@@ -24,7 +24,7 @@ export default function App() {
 
         <a
           href="#plan"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[900] focus:bg-infra focus:px-4 focus:py-2 focus:font-mono focus:text-[11px] focus:uppercase focus:tracking-[0.2em] focus:text-white"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[900] focus:rounded-full focus:bg-gold focus:px-6 focus:py-2.5 focus:font-mono focus:text-[11px] focus:uppercase focus:tracking-[0.2em] focus:text-white"
         >
           Aller au plan de réservation
         </a>
@@ -34,11 +34,11 @@ export default function App() {
         <main>
           <Hero />
 
-          <div className="border-y border-white/10 bg-carbon py-3">
+          <div className="border-y border-[rgba(212,175,55,0.12)] bg-velvet py-3.5">
             <Marquee
               text="OUVERTURE 23:30 • DRESS CODE CHIC • RÉSERVATION OBLIGATOIRE • SERVICE MAGNUM • CARRÉ DJ VIP • "
               speed={38}
-              spanClassName="font-mono text-[10px] uppercase tracking-[0.32em] text-steel"
+              spanClassName="font-mono text-[10px] uppercase tracking-[0.32em] text-sand"
             />
           </div>
 

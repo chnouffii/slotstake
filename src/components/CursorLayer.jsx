@@ -62,7 +62,7 @@ export default function CursorLayer() {
           opacity: active ? 1 : 0.78,
           background: taken
             ? 'radial-gradient(circle, rgba(150,150,160,0.13), rgba(120,120,130,0.04) 34%, transparent 66%)'
-            : 'radial-gradient(circle, rgba(255,30,66,0.15), rgba(229,231,235,0.045) 32%, transparent 66%)'
+            : 'radial-gradient(circle, rgba(212,175,55,0.15), rgba(253,251,247,0.045) 32%, transparent 66%)'
         }}
       />
       <div
@@ -71,11 +71,11 @@ export default function CursorLayer() {
         className="pointer-events-none fixed left-0 top-0 z-[520] h-8 w-8 will-change-transform"
       >
         <div
-          className="h-full w-full border transition-all duration-300"
+          className="h-full w-full rounded-full border transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{
-            borderColor: taken ? 'rgba(229,231,235,0.35)' : 'var(--color-infra)',
-            transform: active ? 'scale(1.5) rotate(45deg)' : 'scale(0.42)',
-            boxShadow: active && !taken ? '0 0 18px rgba(255,30,66,0.45)' : 'none'
+            borderColor: taken ? 'rgba(253,251,247,0.3)' : 'rgba(212,175,55,0.85)',
+            transform: active ? 'scale(1.45)' : 'scale(0.4)',
+            boxShadow: active && !taken ? '0 0 22px rgba(212,175,55,0.4)' : 'none'
           }}
         />
       </div>
@@ -85,8 +85,8 @@ export default function CursorLayer() {
         className="pointer-events-none fixed left-0 top-0 z-[520] will-change-transform"
       >
         <div
-          className="border border-white/15 bg-[rgba(8,8,10,0.92)] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.25em] whitespace-nowrap backdrop-blur-md transition-opacity duration-200"
-          style={{ opacity: active ? 1 : 0, color: taken ? 'var(--color-steel)' : 'var(--color-infra)' }}
+          className="rounded-full border border-[rgba(212,175,55,0.25)] bg-[rgba(10,10,12,0.9)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] whitespace-nowrap backdrop-blur-xl transition-opacity duration-300"
+          style={{ opacity: active ? 1 : 0, color: taken ? 'var(--color-sand)' : 'var(--color-gold)' }}
         >
           {cursor.label}
         </div>

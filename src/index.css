@@ -3,35 +3,33 @@
 
 /* ============================================================
    RÉSERVE 1862 — jetons de design
-   Obsidienne · Infra-Red · Chrome liquide
+   Noir carbone velouté · Or champagne · Crème chaude
    ============================================================ */
 @theme {
-  --color-obsidian: #060608;
-  --color-carbon: #0b0b0e;
-  --color-graphite: #0f0f12;
-  --color-infra: #ff1e42;
-  --color-infra-dim: #7d0f21;
-  --color-chrome: #e5e7eb;
-  --color-steel: #83858d;
-  --color-ash: #4b4d54;
+  --color-carbon: #0a0a0c;
+  --color-velvet: #0e0e11;
+  --color-ember: #14120e;
+  --color-gold: #d4af37;
+  --color-gold-dim: #6b5a1c;
+  --color-champagne: #f3e5ab;
+  --color-cream: #fdfbf7;
+  --color-sand: #a39a88;
+  --color-smoke: #6e6656;
 
   --font-display: 'Archivo', 'Arial Black', 'Helvetica Neue', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
-  --ease-brut: cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-pebble: 28px;
+  --radius-sheet: 32px;
 
-  --animate-breathe: breathe 2.8s ease-in-out infinite;
-  --animate-scan: scan 5.5s linear infinite;
-  --animate-grain: grain 1.1s steps(5) infinite;
+  --animate-breathe: breathe 3.4s ease-in-out infinite;
+  --animate-grain: grain 1.2s steps(5) infinite;
+  --animate-drift: drift 18s ease-in-out infinite alternate;
 }
 
 @keyframes breathe {
-  0%, 100% { opacity: 0.18; }
-  50% { opacity: 0.62; }
-}
-@keyframes scan {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(2000%); }
+  0%, 100% { opacity: 0.22; }
+  50% { opacity: 0.6; }
 }
 @keyframes grain {
   0% { background-position: 0 0; }
@@ -41,6 +39,10 @@
   80% { background-position: 30px 30px; }
   100% { background-position: 0 0; }
 }
+@keyframes drift {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to { transform: translate3d(3%, 2%, 0) scale(1.08); }
+}
 
 /* ---------- base ---------- */
 @layer base {
@@ -49,52 +51,47 @@
     -webkit-text-size-adjust: 100%;
   }
   body {
-    @apply bg-obsidian text-chrome font-mono antialiased;
+    @apply bg-carbon text-cream font-mono antialiased;
     margin: 0;
     overflow-x: hidden;
     font-size: 15px;
   }
   body.is-locked { overflow: hidden; }
-  ::selection { background: var(--color-infra); color: #fff; }
-  :focus-visible { outline: 1px solid var(--color-infra); outline-offset: 3px; }
+  ::selection { background: var(--color-gold); color: #17140b; }
+  :focus-visible { outline: 1px solid var(--color-gold); outline-offset: 4px; border-radius: 999px; }
   h1, h2, h3, h4 { margin: 0; font-family: var(--font-display); }
   p { margin: 0; }
   button { font: inherit; color: inherit; }
 
-  /* barre de défilement discrète */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: #08080a; }
-  ::-webkit-scrollbar-thumb { background: #1b1b20; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--color-infra-dim); }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.18); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.34); }
 }
 
 /* ---------- primitives ---------- */
 @layer components {
-  /* étiquette technique monospace */
   .tag {
-    @apply font-mono text-[10px] uppercase tracking-[0.25em] text-steel;
+    @apply font-mono text-[10px] uppercase tracking-[0.25em] text-sand;
   }
-  .tag-red {
-    @apply font-mono text-[10px] uppercase tracking-[0.25em] text-infra;
+  .tag-gold {
+    @apply font-mono text-[10px] uppercase tracking-[0.25em] text-gold;
   }
 
-  /* titre display ultra-large */
   .display {
-    @apply font-display font-black uppercase leading-[0.86] tracking-[0.02em];
+    @apply font-display font-black uppercase leading-[0.88] tracking-[0.01em];
     font-stretch: 125%;
   }
 
-  /* surface : verre acrylique fumé */
-  .pane {
-    @apply border border-white/10 bg-[rgba(15,15,18,0.75)] backdrop-blur-2xl;
+  /* galet de verre fumé */
+  .pebble {
+    @apply rounded-[28px] border border-[rgba(212,175,55,0.2)] bg-white/[0.04] backdrop-blur-2xl;
   }
 
-  /* filet 1px */
-  .hair { @apply border-t border-white/10; }
-
-  /* crochets brutalistes [ … ] */
-  .bracket::before { content: '[ '; }
-  .bracket::after { content: ' ]'; }
+  /* capsule */
+  .pill {
+    @apply rounded-full border border-[rgba(212,175,55,0.22)] px-5 py-2;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

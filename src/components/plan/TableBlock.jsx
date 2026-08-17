@@ -2,31 +2,33 @@ import { motion } from 'framer-motion';
 import { useVenue, STATUS_LABEL } from '../../state/VenueContext';
 import { useCursor } from '../../state/CursorContext';
 import { euro } from '../../lib/format';
+import { SPRING, SPRING_SOFT } from '../../lib/motion';
 
-const EASE = [0.16, 1, 0.3, 1];
-
-/** Équerres de visée aux quatre angles, façon réticule technique. */
-function Reticle({ x, y, w, h }) {
-  const a = 9;
-  const corners = [
-    `M${x} ${y + a} V${y} H${x + a}`,
-    `M${x + w - a} ${y} H${x + w} V${y + a}`,
-    `M${x + w} ${y + h - a} V${y + h} H${x + w - a}`,
-    `M${x + a} ${y + h} H${x} V${y + h - a}`
-  ];
-  return (
-    <g className="pointer-events-none">
-      {corners.map((d) => (
-        <path key={d} d={d} fill="none" stroke="var(--color-infra)" strokeWidth="1.6" />
-      ))}
-    </g>
+/** Silhouette d'une table : ovale ou capsule galbée. */
+function Shape({ oval, x, y, w, h, r, cx, cy, inset = 0, ...rest }) {
+  return oval ? (
+    <ellipse cx={cx} cy={cy} rx={w / 2 + inset} ry={h / 2 + inset} {...rest} />
+  ) : (
+    <rect
+      x={x - inset}
+      y={y - inset}
+      width={w + inset * 2}
+      height={h + inset * 2}
+      rx={r + inset}
+      ry={r + inset}
+      {...rest}
+    />
   );
 }
 
+/**
+ * Une table de la cartographie : capsule galbée (carrés, banquettes) ou
+ * ovale (tables hautes, lounge). Aucune arête vive.
+ */
 export default function TableBlock({ zone, index }) {
   const { statusOf, hoverId, setHoverId, openTable, openId, pulse } = useVenue();
   const { point, clear } = useCursor();
-  const { x, y, w, h } = zone.plan;
+  const { x, y, w, h, shape, r = 30 } = zone.plan;
 
   const status = statusOf(zone.id);
   const taken = status === 'taken';
@@ -34,11 +36,14 @@ export default function TableBlock({ zone, index }) {
   const hot = hoverId === zone.id;
   const active = openId === zone.id;
   const dim = Boolean(hoverId) && !hot;
+  const oval = shape === 'oval';
+  const cx = x + w / 2;
+  const cy = y + h / 2;
   const small = Math.min(w, h) < 70;
 
   const enter = () => {
     setHoverId(zone.id);
-    point(`${zone.code} — ${STATUS_LABEL[status]}`, taken ? 'taken' : 'default');
+    point(`${zone.code} · ${STATUS_LABEL[status]}`, taken ? 'taken' : 'default');
   };
   const leave = () => {
     setHoverId(null);
@@ -49,7 +54,13 @@ export default function TableBlock({ zone, index }) {
     openTable(zone.id);
   };
 
-  const edge = taken ? 'rgba(229,231,235,0.4)' : active || hot ? 'var(--color-infra)' : 'rgba(229,231,235,0.72)';
+  const edge = taken
+    ? 'rgba(253,251,247,0.24)'
+    : hot || active
+      ? 'var(--color-gold)'
+      : 'rgba(212,175,55,0.5)';
+
+  const geo = { oval, x, y, w, h, r, cx, cy };
 
   return (
     <motion.g
@@ -68,87 +79,128 @@ export default function TableBlock({ zone, index }) {
         }
       }}
       className="cursor-pointer focus:outline-none"
-      animate={{ opacity: dim ? 0.14 : taken ? 0.3 : 1 }}
-      transition={{ duration: 0.45, ease: EASE }}
+      animate={{ opacity: dim ? 0.22 : taken ? 0.34 : 1 }}
+      transition={SPRING_SOFT}
     >
+      {/* halo ambré qui s'étend au survol */}
+      <motion.ellipse
+        cx={cx}
+        cy={cy}
+        rx={Math.max(w, h) * 1.3}
+        ry={Math.max(w, h) * 1.3}
+        fill={`url(#halo-${taken ? 'mute' : 'gold'})`}
+        className="pointer-events-none"
+        initial={false}
+        animate={{ opacity: hot || active ? 1 : 0, scale: hot || active ? 1 : 0.5 }}
+        transition={SPRING_SOFT}
+        style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+      />
+
       <motion.g
-        animate={{ scale: hot || active ? 1.055 : 1 }}
-        transition={{ duration: 0.55, ease: EASE }}
-        style={{ transformBox: 'view-box', transformOrigin: `${x + w / 2}px ${y + h / 2}px` }}
+        animate={{ scale: hot || active ? 1.06 : 1 }}
+        transition={SPRING}
+        style={{ transformBox: 'view-box', transformOrigin: `${cx}px ${cy}px` }}
       >
-        {/* respiration lumineuse rouge — tables libres uniquement */}
+        {/* respiration dorée — tables libres */}
         {!taken && (
-          <motion.rect
-            x={x - 3}
-            y={y - 3}
-            width={w + 6}
-            height={h + 6}
-            fill="none"
-            stroke="var(--color-infra)"
-            strokeWidth="1"
-            initial={{ opacity: 0.2 }}
-            animate={{ opacity: hot || active ? 0.9 : [0.26, 0.78, 0.26] }}
+          <motion.g
+            initial={false}
+            animate={{ opacity: hot || active ? 0.9 : [0.2, 0.62, 0.2] }}
             transition={
               hot || active
-                ? { duration: 0.3 }
-                : { duration: 3.1, repeat: Infinity, ease: 'easeInOut', delay: index * 0.14 }
+                ? SPRING
+                : { duration: 3.6, repeat: Infinity, ease: 'easeInOut', delay: index * 0.16 }
             }
-            style={{ filter: 'drop-shadow(0 0 7px rgba(255,30,66,0.55))' }}
-          />
+          >
+            <Shape
+              {...geo}
+              inset={5}
+              fill="none"
+              stroke="var(--color-gold)"
+              strokeWidth="1"
+              style={{ filter: 'drop-shadow(0 0 8px rgba(212,175,55,0.5))' }}
+            />
+          </motion.g>
         )}
 
-        {/* bloc de verre fumé */}
-        <rect x={x} y={y} width={w} height={h} fill="rgba(15,15,18,0.82)" />
-        <rect
-          x={x}
-          y={y}
-          width={w}
-          height={h}
-          fill={hot || active ? 'rgba(255,30,66,0.10)' : 'transparent'}
+        {/* galet de verre fumé */}
+        <Shape {...geo} fill="rgba(20,18,14,0.72)" />
+        <Shape
+          {...geo}
+          fill={hot || active ? 'rgba(212,175,55,0.12)' : 'transparent'}
           stroke={edge}
-          strokeWidth={hot || active ? 1.4 : 0.9}
-          style={{ transition: 'fill .3s linear' }}
+          strokeWidth={hot || active ? 1.5 : 1}
+          style={{ transition: 'fill .35s ease' }}
         />
-        {/* reflet chrome sur l'arête haute */}
-        <line x1={x} y1={y + 0.5} x2={x + w} y2={y + 0.5} stroke="rgba(229,231,235,0.5)" strokeWidth="0.7" />
-
-        {(hot || active) && <Reticle x={x - 3} y={y - 3} w={w + 6} h={h + 6} />}
+        {/* reflet chaud sur la courbe haute */}
+        {!taken && (
+          <path
+            d={
+              oval
+                ? `M${cx - w / 2 + 6} ${cy - 4} Q${cx} ${cy - h / 2 - 3} ${cx + w / 2 - 6} ${cy - 4}`
+                : `M${x + r * 0.55} ${y + 1.5} Q${cx} ${y - 2} ${x + w - r * 0.55} ${y + 1.5}`
+            }
+            fill="none"
+            stroke="rgba(253,251,247,0.4)"
+            strokeWidth="0.8"
+            strokeLinecap="round"
+            className="pointer-events-none"
+          />
+        )}
       </motion.g>
 
       <text
-        x={x + 8}
-        y={y + 17}
+        x={cx}
+        y={oval ? cy + 3.5 : y + (small ? h / 2 + 3.5 : 24)}
+        textAnchor="middle"
         className="pointer-events-none font-mono uppercase"
-        style={{ fontSize: small ? 9 : 10.5, letterSpacing: '0.16em', fill: taken ? 'rgba(229,231,235,0.6)' : 'var(--color-chrome)' }}
+        style={{
+          fontSize: small ? 9 : 10.5,
+          letterSpacing: '0.16em',
+          fill: taken ? 'rgba(253,251,247,0.45)' : 'var(--color-cream)'
+        }}
       >
         {zone.code}
       </text>
 
-      {taken ? (
-        <text
-          x={x + w / 2}
-          y={y + h / 2 + 4}
-          textAnchor="middle"
-          className="pointer-events-none font-mono uppercase"
-          style={{ fontSize: small ? 8 : 9.5, letterSpacing: '0.18em', fill: 'rgba(229,231,235,0.68)' }}
-        >
-          [ TAKEN ]
-        </text>
-      ) : (
-        !small && (
-          <text
-            x={x + 8}
-            y={y + h - 9}
-            className="pointer-events-none font-mono"
-            style={{ fontSize: 8.5, letterSpacing: '0.1em', fill: pending ? 'var(--color-infra)' : 'rgba(131,133,141,0.9)' }}
-          >
-            {pending ? 'DEMANDE ENVOYÉE' : `${zone.capacity[0]}–${zone.capacity[1]} PAX · ${euro(zone.min)}`}
-          </text>
-        )
-      )}
+      {taken
+        ? !oval && (
+            <text
+              x={cx}
+              y={y + h - 22}
+              textAnchor="middle"
+              className="pointer-events-none font-mono uppercase"
+              style={{ fontSize: 8.5, letterSpacing: '0.2em', fill: 'rgba(253,251,247,0.4)' }}
+            >
+              complet
+            </text>
+          )
+        : !small &&
+          !oval && (
+            <text
+              x={cx}
+              y={y + h - 20}
+              textAnchor="middle"
+              className="pointer-events-none font-mono"
+              style={{
+                fontSize: 8.5,
+                letterSpacing: '0.1em',
+                fill: pending ? 'var(--color-gold)' : 'rgba(163,154,136,0.9)'
+              }}
+            >
+              {pending ? 'DEMANDE ENVOYÉE' : `${zone.capacity[0]}–${zone.capacity[1]} PAX · ${euro(zone.min)}`}
+            </text>
+          )}
 
-      {pending && small && (
-        <circle cx={x + w - 9} cy={y + 9} r="3" fill="var(--color-infra)" style={{ filter: 'drop-shadow(0 0 5px rgba(255,30,66,0.8))' }} />
+      {/* pastille d'état pour les formes compactes */}
+      {(pending || (taken && oval)) && (
+        <circle
+          cx={cx + (oval ? w / 2 - 5 : w / 2 - 14)}
+          cy={cy - (oval ? h / 2 - 5 : h / 2 - 14)}
+          r="3.2"
+          fill={pending ? 'var(--color-gold)' : 'rgba(253,251,247,0.35)'}
+          style={pending ? { filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.85))' } : undefined}
+        />
       )}
     </motion.g>
   );

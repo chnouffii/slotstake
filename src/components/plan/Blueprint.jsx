@@ -2,69 +2,46 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ROOM, ZONES } from '../../data/venue';
 import TableBlock from './TableBlock';
 import { useVenue } from '../../state/VenueContext';
+import { SPRING_SOFT } from '../../lib/motion';
 
-const LINE = 'rgba(229,231,235,0.30)';
-const LINE_SOFT = 'rgba(229,231,235,0.16)';
+const LINE = 'rgba(212,175,55,0.26)';
+const LINE_SOFT = 'rgba(253,251,247,0.12)';
 
-/** Cotation : trait, embouts et valeur. */
-function Dim({ from, to, label, vertical }) {
-  const [x1, y1] = from;
-  const [x2, y2] = to;
-  const mx = (x1 + x2) / 2;
-  const my = (y1 + y2) / 2;
-  const tick = 5;
-  return (
-    <g className="pointer-events-none" stroke={LINE_SOFT} fill="none">
-      <line x1={x1} y1={y1} x2={x2} y2={y2} />
-      {vertical ? (
-        <>
-          <line x1={x1 - tick} y1={y1} x2={x1 + tick} y2={y1} />
-          <line x1={x2 - tick} y1={y2} x2={x2 + tick} y2={y2} />
-        </>
-      ) : (
-        <>
-          <line x1={x1} y1={y1 - tick} x2={x1} y2={y1 + tick} />
-          <line x1={x2} y1={y2 - tick} x2={x2} y2={y2 + tick} />
-        </>
-      )}
-      <text
-        x={vertical ? mx + 12 : mx}
-        y={vertical ? my : my - 8}
-        textAnchor={vertical ? 'start' : 'middle'}
-        stroke="none"
-        className="font-mono"
-        style={{ fontSize: 8.5, letterSpacing: '0.18em', fill: 'rgba(131,133,141,0.75)' }}
-        transform={vertical ? `rotate(90 ${mx + 12} ${my})` : undefined}
-      >
-        {label}
-      </text>
-    </g>
-  );
-}
-
-/** Élément fixe : cabine DJ, bar, escalier. */
+/** Mobilier fixe : cabine, bar, escalier — capsules adoucies. */
 function Fixture({ f }) {
   return (
     <g className="pointer-events-none">
-      <rect x={f.x} y={f.y} width={f.w} height={f.h} fill="rgba(12,12,15,0.6)" stroke={LINE} strokeWidth="0.9" />
+      <rect
+        x={f.x}
+        y={f.y}
+        width={f.w}
+        height={f.h}
+        rx={f.r}
+        ry={f.r}
+        fill="rgba(255,255,255,0.025)"
+        stroke={LINE_SOFT}
+        strokeWidth="1"
+      />
       {f.steps &&
-        Array.from({ length: f.steps }).map((_, i) => (
-          <line
-            key={i}
-            x1={f.x}
-            y1={f.y + ((i + 1) * f.h) / (f.steps + 1)}
-            x2={f.x + f.w}
-            y2={f.y + ((i + 1) * f.h) / (f.steps + 1)}
-            stroke={LINE_SOFT}
-            strokeWidth="0.8"
-          />
-        ))}
+        Array.from({ length: f.steps }).map((_, i) => {
+          const yy = f.y + ((i + 1) * f.h) / (f.steps + 1);
+          return (
+            <path
+              key={i}
+              d={`M${f.x + 16} ${yy} Q${f.x + f.w / 2} ${yy - 9} ${f.x + f.w - 16} ${yy}`}
+              fill="none"
+              stroke={LINE_SOFT}
+              strokeWidth="0.9"
+              strokeLinecap="round"
+            />
+          );
+        })}
       <text
         x={f.x + f.w / 2}
-        y={f.steps ? f.y - 9 : f.y + f.h / 2 + 3.5}
+        y={f.steps ? f.y - 14 : f.y + f.h / 2 + 3.5}
         textAnchor="middle"
         className="font-mono uppercase"
-        style={{ fontSize: 9.5, letterSpacing: '0.26em', fill: 'rgba(131,133,141,0.85)' }}
+        style={{ fontSize: 9.5, letterSpacing: '0.3em', fill: 'rgba(163,154,136,0.85)' }}
       >
         {f.label}
       </text>
@@ -84,35 +61,44 @@ export default function Blueprint() {
         aria-label="Plan du club — sélectionnez une table pour ouvrir sa fiche"
       >
         <defs>
-          <pattern id="bpGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M40 0H0V40" fill="none" stroke="rgba(229,231,235,0.055)" strokeWidth="0.6" />
+          {/* trame organique : points diffus plutôt qu'une grille */}
+          <pattern id="dots" width="46" height="46" patternUnits="userSpaceOnUse">
+            <circle cx="23" cy="23" r="1" fill="rgba(253,251,247,0.055)" />
           </pattern>
-          <radialGradient id="bpFloor" cx="50%" cy="42%" r="62%">
-            <stop offset="0%" stopColor="rgba(255,30,66,0.055)" />
-            <stop offset="70%" stopColor="rgba(255,30,66,0.012)" />
-            <stop offset="100%" stopColor="rgba(255,30,66,0)" />
+          <radialGradient id="floorGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="rgba(212,175,55,0.10)" />
+            <stop offset="55%" stopColor="rgba(243,229,171,0.035)" />
+            <stop offset="100%" stopColor="rgba(212,175,55,0)" />
+          </radialGradient>
+          <radialGradient id="halo-gold" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="rgba(212,175,55,0.34)" />
+            <stop offset="45%" stopColor="rgba(243,229,171,0.10)" />
+            <stop offset="100%" stopColor="rgba(212,175,55,0)" />
+          </radialGradient>
+          <radialGradient id="halo-mute" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="rgba(253,251,247,0.10)" />
+            <stop offset="100%" stopColor="rgba(253,251,247,0)" />
           </radialGradient>
         </defs>
 
-        {/* trame */}
-        <rect x="100" y="0" width="1100" height="900" fill="url(#bpGrid)" />
+        <rect x="100" y="0" width="1100" height="900" fill="url(#dots)" />
 
-        {/* enveloppe */}
-        <path d={ROOM.walls} fill="rgba(10,10,13,0.55)" stroke={LINE} strokeWidth="1.5" />
-        <path d={ROOM.ties} stroke={LINE} strokeWidth="1.2" fill="none" />
+        {/* enveloppe galbée */}
+        <path d={ROOM.walls} fill="rgba(255,255,255,0.022)" stroke={LINE} strokeWidth="1.4" />
 
-        {/* piste */}
-        <circle cx={ROOM.dancefloor.cx} cy={ROOM.dancefloor.cy} r={ROOM.dancefloor.r * 1.2} fill="url(#bpFloor)" />
-        {[1, 0.66, 0.32].map((k) => (
+        {/* piste : nappe lumineuse + anneaux souples */}
+        <circle cx={ROOM.dancefloor.cx} cy={ROOM.dancefloor.cy} r={ROOM.dancefloor.r * 1.5} fill="url(#floorGlow)" />
+        {[1, 0.64, 0.3].map((k) => (
           <circle
             key={k}
             cx={ROOM.dancefloor.cx}
             cy={ROOM.dancefloor.cy}
             r={ROOM.dancefloor.r * k}
             fill="none"
-            stroke={k === 1 ? 'rgba(255,30,66,0.22)' : LINE_SOFT}
-            strokeWidth="0.8"
-            strokeDasharray={k === 1 ? '2 10' : '1 14'}
+            stroke={k === 1 ? 'rgba(212,175,55,0.28)' : 'rgba(253,251,247,0.09)'}
+            strokeWidth="0.9"
+            strokeDasharray={k === 1 ? '1 14' : '1 18'}
+            strokeLinecap="round"
           />
         ))}
         <text
@@ -120,18 +106,19 @@ export default function Blueprint() {
           y={ROOM.dancefloor.cy + 4}
           textAnchor="middle"
           className="pointer-events-none font-mono uppercase"
-          style={{ fontSize: 10, letterSpacing: '0.42em', fill: 'rgba(131,133,141,0.7)' }}
+          style={{ fontSize: 10, letterSpacing: '0.45em', fill: 'rgba(163,154,136,0.7)' }}
         >
           Dancefloor
         </text>
 
-        {/* rail mange-debout */}
+        {/* rail mange-debout, en capsule */}
         <rect
           x={ROOM.rail.x}
           y={ROOM.rail.y}
           width={ROOM.rail.w}
           height={ROOM.rail.h}
-          fill="rgba(15,15,18,0.7)"
+          rx={ROOM.rail.r}
+          fill="rgba(255,255,255,0.03)"
           stroke={LINE_SOFT}
           strokeWidth="0.8"
         />
@@ -140,10 +127,6 @@ export default function Blueprint() {
           <Fixture key={f.id} f={f} />
         ))}
 
-        {/* annotations */}
-        {ROOM.dims.map((d) => (
-          <Dim key={d.label} {...d} />
-        ))}
         {ROOM.zonesTags.map((t) => (
           <text
             key={t.label}
@@ -151,52 +134,29 @@ export default function Blueprint() {
             y={t.y}
             textAnchor={t.anchor || 'start'}
             className="pointer-events-none font-mono uppercase"
-            style={{ fontSize: 8.5, letterSpacing: '0.24em', fill: 'rgba(255,30,66,0.5)' }}
+            style={{ fontSize: 8.5, letterSpacing: '0.32em', fill: 'rgba(212,175,55,0.5)' }}
           >
             {t.label}
           </text>
         ))}
-        <text
-          x="140"
-          y="874"
-          className="pointer-events-none font-mono uppercase"
-          style={{ fontSize: 8.5, letterSpacing: '0.24em', fill: 'rgba(131,133,141,0.5)' }}
-        >
-          RES-1862 / PLAN-01 / REV.B — REZ-DE-CHAUSSÉE
-        </text>
-        <g className="pointer-events-none" stroke={LINE_SOFT} fill="none">
-          <path d="M1040 858 v-26 M1030 842 l10 -10 l10 10" />
-          <text
-            x="1040"
-            y="878"
-            textAnchor="middle"
-            stroke="none"
-            className="font-mono"
-            style={{ fontSize: 9, letterSpacing: '0.2em', fill: 'rgba(131,133,141,0.5)' }}
-          >
-            N
-          </text>
-        </g>
 
-        {/* tables */}
         {ZONES.map((z, i) => (
           <TableBlock key={z.id} zone={z} index={i} />
         ))}
       </svg>
 
-      {/* balayage lors d'un changement de soirée */}
+      {/* voile chaud lors d'un changement de soirée */}
       <AnimatePresence mode="wait">
         <motion.div
           key={eventId}
-          initial={{ scaleX: 0, opacity: 0.9 }}
-          animate={{ scaleX: 1, opacity: 0 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="pointer-events-none absolute inset-y-0 left-0 w-full origin-left"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,30,66,0.10), transparent)' }}
+          initial={{ opacity: 0.55, scale: 0.94 }}
+          animate={{ opacity: 0, scale: 1.04 }}
+          transition={SPRING_SOFT}
+          className="pointer-events-none absolute inset-0 rounded-[28px]"
+          style={{ background: 'radial-gradient(circle at 50% 50%, rgba(212,175,55,0.16), transparent 68%)' }}
         />
       </AnimatePresence>
 
-      {/* lecture d'état, en direct, pour les lecteurs d'écran */}
       <p className="sr-only" aria-live="polite">
         {event.name} — {hoverId ? `table ${hoverId} survolée` : 'aucune table survolée'}
       </p>

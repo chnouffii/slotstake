@@ -1,21 +1,24 @@
 import { motion } from 'framer-motion';
 import { packById } from '../../data/venue';
-import { euro } from '../../lib/format';
-import { haptic } from '../../lib/format';
+import { euro, haptic } from '../../lib/format';
+import { SPRING } from '../../lib/motion';
 
 /**
- * Sélecteur de bouteilles façon tranche de console : témoin LED,
- * libellé, volume, prix et bargraph d'intensité.
+ * Sélecteur de bouteilles : capsules horizontales, témoin doré et
+ * micro-lueur à l'activation.
  */
 export default function BottleConsole({ packIds, value, onChange }) {
-  const options = [...packIds.map(packById), { id: 'sur-place', name: 'CHOIX SUR PLACE', short: 'SUR PLACE', price: 0, vol: '—' }];
+  const options = [
+    ...packIds.map(packById),
+    { id: 'sur-place', name: 'CHOIX SUR PLACE', short: 'SUR PLACE', price: 0, vol: '—' }
+  ];
 
   return (
-    <div role="radiogroup" aria-label="Magnum et packs bouteilles" className="border border-white/10">
-      {options.map((p, i) => {
+    <div role="radiogroup" aria-label="Magnum et packs bouteilles" className="grid gap-2">
+      {options.map((p) => {
         const on = value === p.id;
         return (
-          <button
+          <motion.button
             key={p.id}
             type="button"
             role="radio"
@@ -24,43 +27,44 @@ export default function BottleConsole({ packIds, value, onChange }) {
               haptic(8);
               onChange(p.id);
             }}
-            className={`group flex w-full items-center gap-4 px-4 py-3 text-left transition-colors duration-300 ${
-              i > 0 ? 'border-t border-white/[0.07]' : ''
-            } ${on ? 'bg-infra/[0.07]' : 'hover:bg-white/[0.03]'}`}
+            whileTap={{ scale: 0.985 }}
+            transition={SPRING}
+            className={`flex w-full items-center gap-4 rounded-2xl border px-4 py-3.5 text-left transition-colors duration-500 ${
+              on
+                ? 'border-[rgba(212,175,55,0.6)] bg-gold/[0.09]'
+                : 'border-white/[0.08] bg-white/[0.02] hover:border-[rgba(212,175,55,0.3)]'
+            }`}
+            style={on ? { boxShadow: '0 0 26px rgba(212,175,55,0.16), inset 0 0 22px rgba(212,175,55,0.06)' } : undefined}
           >
-            {/* LED */}
-            <span className="relative grid h-3 w-3 shrink-0 place-items-center border border-white/20">
-              <motion.span
-                animate={{ opacity: on ? 1 : 0.12, scale: on ? 1 : 0.7 }}
-                transition={{ duration: 0.25 }}
-                className="h-1.5 w-1.5 bg-infra"
-                style={{ boxShadow: on ? '0 0 8px rgba(255,30,66,0.9)' : 'none' }}
-              />
-            </span>
+            <motion.span
+              className="h-2.5 w-2.5 shrink-0 rounded-full"
+              animate={{
+                backgroundColor: on ? 'rgb(212,175,55)' : 'rgba(253,251,247,0.16)',
+                scale: on ? 1 : 0.75
+              }}
+              transition={SPRING}
+              style={on ? { boxShadow: '0 0 12px rgba(212,175,55,0.9)' } : undefined}
+            />
 
             <span className="min-w-0 flex-1">
-              <span className={`block truncate font-mono text-[11px] uppercase tracking-[0.16em] ${on ? 'text-chrome' : 'text-steel'}`}>
+              <span
+                className={`block truncate font-mono text-[11px] uppercase tracking-[0.16em] ${
+                  on ? 'text-cream' : 'text-sand'
+                }`}
+              >
                 {p.short}
               </span>
-              <span className="mt-0.5 block font-mono text-[9px] uppercase tracking-[0.2em] text-ash">{p.vol}</span>
+              <span className="mt-0.5 block font-mono text-[9px] uppercase tracking-[0.2em] text-smoke">{p.vol}</span>
             </span>
 
-            {/* bargraph */}
-            <span className="hidden items-end gap-[2px] sm:flex" aria-hidden="true">
-              {[6, 10, 14, 9, 12].map((hgt, k) => (
-                <motion.span
-                  key={k}
-                  animate={{ opacity: on ? 0.35 + k * 0.14 : 0.12, height: hgt }}
-                  transition={{ duration: 0.3, delay: k * 0.03 }}
-                  className="w-[3px] bg-infra"
-                />
-              ))}
-            </span>
-
-            <span className={`w-20 shrink-0 text-right font-mono text-[11px] tabular-nums ${on ? 'text-infra' : 'text-ash'}`}>
+            <span
+              className={`shrink-0 rounded-full px-3 py-1 font-mono text-[10.5px] tabular-nums ${
+                on ? 'bg-gold/15 text-champagne' : 'text-smoke'
+              }`}
+            >
               {p.price ? euro(p.price) : '—'}
             </span>
-          </button>
+          </motion.button>
         );
       })}
     </div>

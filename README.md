@@ -1,20 +1,23 @@
 # RÉSERVE 1862 — private club · Strasbourg
 
 Site et module de réservation de tables du club **Réserve 1862**.
-Direction artistique brutaliste : obsidienne, infra-red, chrome liquide, grain
-argentique, typographie display ultra-large et monospace d’ingénierie.
+Direction artistique : noir carbone velouté (`#0A0A0C`), or champagne
+(`#D4AF37`), crème chaude (`#FDFBF7`), halos ambrés très diffus et grain subtil.
+Géométrie entièrement galbée — aucun angle droit : galets de verre fumé
+(`rounded-[28px]`), capsules (`rounded-full`) et ovales.
 
-Pièce maîtresse : un **blueprint nocturne** de la salle. Chaque table est un bloc
-de verre fumé aux arêtes nettes ; les tables libres respirent en rouge, les
-tables prises portent un `[ TAKEN ]`. Au survol, la salle s’assombrit et le bloc
-ciblé s’isole. Au clic, un **volet latéral asymétrique** glisse depuis la droite
-pour valider l’accès VIP.
+Pièce maîtresse : une **cartographie de la salle en courbes**. Chaque table est
+un galet ou un ovale de verre fumé ; les tables libres respirent en doré, les
+tables prises s’effacent. Au survol, un halo ambré s’étend en dégradé radial
+autour de la table et le reste de la salle s’assombrit. Au clic, une **sheet aux
+angles généreux** s’ouvre — volet latéral sur desktop, feuille montante sur
+mobile — pour valider l’accès VIP.
 
 ## Stack
 
 React 19 · Vite 8 · Tailwind CSS 4 · Framer Motion · Lucide Icons.
-Polices auto-hébergées (Archivo Expanded + JetBrains Mono, SIL OFL) : aucune
-requête vers un tiers.
+Polices auto-hébergées (Archivo Expanded pour les titres, JetBrains Mono pour
+les libellés techniques, SIL OFL) : aucune requête vers un tiers.
 
 ```bash
 npm install
@@ -35,39 +38,42 @@ src/
   data/venue.js              ⇽ source unique : salle, tables, soirées, packs
   state/VenueContext.jsx     réservations, soirée active, survol, toast, flash
   state/CursorContext.jsx    libellé et variante du curseur contextuel
-  hooks/                     useMagnetic · useCountdown · useFinePointer · useLockBody
+  lib/motion.js              ressorts partagés (spring physics)
+  hooks/                     useMagnetic · useCountdown · useFinePointer · useLockBody · useMediaQuery
   components/
     Hero.jsx                 titre display, marquee cinétique, compteur LED
-    LedCountdown.jsx         afficheur à segments éteints + ligne de balayage
+    LedCountdown.jsx         compteur en galets, segments éteints en fond
     CursorLayer.jsx          halo volumétrique + anneau + étiquette
     Grain.jsx / Flash.jsx    grain animé · flash au clic
-    plan/Blueprint.jsx       plan SVG : murs, cotations, zones, piste
-    plan/TableBlock.jsx      un bloc de table + états + réticule
+    plan/Blueprint.jsx       plan SVG : enveloppe galbée, piste, mobilier
+    plan/TableBlock.jsx      galet ou ovale + états + halo de survol
     plan/PlanConsole.jsx     colonne technique : occupation, tables libres, légende
     plan/EventBar.jsx        sélecteur de soirée (surlignage animé `layoutId`)
-    booking/BookingDrawer.jsx volet latéral, filigrane, specs, validation
-    booking/BottleConsole.jsx sélecteur de bouteilles façon console audio
-    ui/MagneticButton.jsx    bouton magnétique + balayage chromé
+    booking/BookingDrawer.jsx sheet arrondie, filigrane, specs, validation
+    booking/BottleConsole.jsx sélecteur de bouteilles en capsules
+    ui/MagneticButton.jsx    capsule magnétique + reflet champagne
     ui/Marquee.jsx           bandeau cinétique en boucle continue
 ```
 
 ## Le module de réservation
 
-- **États des tables** — `DISPONIBLE` (arête chrome + respiration rouge),
-  `DEMANDE ENVOYÉE` (pointillé rouge), `COMPLET` (opacité réduite, `[ TAKEN ]`).
-- **Survol** — zoom doux du bloc, réticule aux quatre angles, reste de la salle à
-  14 % d’opacité, étiquette `VIP 02 — DISPONIBLE` accrochée au curseur.
-- **Volet latéral** — numéro de table en filigrane géant, badge
-  `[ DISPONIBILITÉ : VALIDÉE ]`, grille monospace (capacité, minimum, emplacement,
-  niveau acoustique), sélecteur de bouteilles à témoins LED et bargraph, compteur
-  de convives borné par la capacité, CTA pleine largeur à balayage chromé
-  « VALIDER L’ACCÈS VIP », puis écran de confirmation avec référence.
+- **États des tables** — disponible (contour doré + respiration lente),
+  demande envoyée (pastille dorée), complet (galet estompé, mention « complet »).
+- **Survol** — halo ambré en dégradé radial autour de la table, léger
+  agrandissement, reste de la salle à 22 % d’opacité, étiquette
+  `VIP 02 · DISPONIBLE` accrochée au curseur.
+- **Sheet de réservation** — numéro de table en filigrane géant, badge capsule
+  « Disponibilité : validée », spécifications en galets (capacité, minimum,
+  emplacement, niveau acoustique), sélecteur de bouteilles en capsules à témoin
+  doré, compteur de convives borné par la capacité, grand bouton pilule
+  « Valider l’accès VIP », puis écran de confirmation avec référence.
   Table complète → bascule en liste d’attente.
 - **Console latérale** — soirée active, barre d’occupation, accès direct aux
   tables libres (synchronisé avec le survol du plan), légende.
-- **Micro-interactions** — flash lumineux bref et vibration courte au clic
-  (`navigator.vibrate`), curseur magnétique sur les boutons, transitions de dates
-  en `cubic-bezier(0.16, 1, 0.3, 1)`.
+- **Micro-interactions** — flash chaud bref et vibration courte au clic
+  (`navigator.vibrate`), capsules magnétiques qui suivent le curseur, et
+  **ressorts partagés** (`src/lib/motion.js`, `damping: 25, stiffness: 200`) sur
+  toutes les transitions : ouverture de la sheet, survols, changement de soirée.
 - **Accessibilité** — blocs focusables (Tab), activables (Entrée / Espace), piège
   à focus et fermeture Échap dans le volet, libellés ARIA sur chaque table,
   curseur natif conservé au tactile, `prefers-reduced-motion` respecté.
@@ -78,8 +84,8 @@ Tout part de `src/data/venue.js` :
 
 | Constante | Rôle |
 |---|---|
-| `ROOM`   | murs, raccords d’alcôves, piste, mobilier fixe (DJ, bar, escalier), cotations et repères de zones |
-| `ZONES`  | tables : `code`, `name`, `capacity`, `min`, `packIds`, `includes`, `acoustics` et `plan` = `{x, y, w, h}` dans le viewBox du blueprint |
+| `ROOM`   | enveloppe galbée, piste, mobilier fixe (DJ, bar, escalier) et repères de zones |
+| `ZONES`  | tables : `code`, `name`, `capacity`, `min`, `packIds`, `includes`, `acoustics` et `plan` = `{x, y, w, h, shape, r}` — `shape: 'blob'` (capsule galbée) ou `'oval'` |
 | `EVENTS` | soirées : date ISO (compte à rebours), line-up, `reserved` = tables complètes |
 | `PACKS`  | carte bouteilles, réutilisée par la section Carte et par le volet |
 

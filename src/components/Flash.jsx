@@ -25,7 +25,7 @@ export default function Flash() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2, ease: 'linear' }}
           className="pointer-events-none fixed inset-0 z-[480] mix-blend-screen"
-          style={{ background: 'radial-gradient(circle at 50% 50%, rgba(255,30,66,0.5), rgba(229,231,235,0.12) 45%, transparent 72%)' }}
+          style={{ background: 'radial-gradient(circle at 50% 50%, rgba(243,229,171,0.35), rgba(212,175,55,0.12) 45%, transparent 72%)' }}
         />
       )}
     </AnimatePresence>

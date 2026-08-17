@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useVenue } from '../state/VenueContext';
+import { SPRING } from '../lib/motion';
 
 export default function Toast() {
   const { toast } = useVenue();
@@ -11,10 +12,10 @@ export default function Toast() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="pane flex items-center gap-3 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-chrome"
+            transition={SPRING}
+            className="flex items-center gap-3 rounded-full border border-[rgba(212,175,55,0.28)] bg-[rgba(14,14,17,0.9)] px-6 py-3.5 font-mono text-[10px] uppercase tracking-[0.2em] text-cream backdrop-blur-2xl"
           >
-            <span className="h-1.5 w-1.5 shrink-0 bg-infra" style={{ boxShadow: '0 0 10px var(--color-infra)' }} />
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-gold" style={{ boxShadow: '0 0 10px var(--color-gold)' }} />
             {toast}
           </motion.p>
         )}
